@@ -10,11 +10,12 @@
       <div class="search-section">
         <input 
           v-model="searchQuery" 
-          @input="handleSearch"
+          @input="updateLiveFilter"
+          @keyup.enter="handleSearch"
           placeholder="Search by title, author, ISBN, year, or publication status..."
           class="search-input"
         >
-        <button v-if="searchQuery" @click="clearSearch" class="btn-clear">Clear</button>
+        <button @click="handleSearch" class="btn-search">Search</button>
       </div>
 
       <!-- Add/Edit Form Modal -->
@@ -71,13 +72,13 @@
         Error: {{ error }}
       </div>
 
-      <div v-else-if="filteredBooks.length === 0" class="status">
+      <div v-else-if="displayedBooks.length === 0" class="status">
         {{ searchQuery ? 'No books match your search.' : 'No books available.' }}
       </div>
 
       <div v-else class="grid">
         <article
-          v-for="book in filteredBooks"
+          v-for="book in displayedBooks"
           :key="book._id"
           class="card"
         >
@@ -131,11 +132,14 @@ export default {
   data() {
     return {
       books: [],
+      searchQuery: '',
+      liveFiltered: [],   // reactive filtering while typing
+      searchResults: [],  // locked results after clicking Search
+      locked: false,      // flag to know if search is locked
       loading: false,
       error: null,
       showAddForm: false,
       editingBook: null,
-      searchQuery: '',
       activeMenu: null,
       form: {
         title: '',
@@ -148,21 +152,9 @@ export default {
     };
   },
   computed: {
-    filteredBooks() {
-      if (!this.searchQuery) return this.books;
-      
-      const query = this.searchQuery.toLowerCase();
-      
-      return this.books.filter(book => {
-        return (
-          book.title.toLowerCase().includes(query) ||
-          book.author.toLowerCase().includes(query) ||
-          book.isbn.toLowerCase().includes(query) ||
-          book.yearPublished.toString().includes(query) ||
-          (book.published && 'published'.includes(query)) ||
-          (!book.published && 'unpublished'.includes(query))
-        );
-      });
+    displayedBooks() {
+      // If locked, show only searchResults
+      return this.locked ? this.searchResults : this.liveFiltered;
     }
   },
   mounted() {
@@ -179,6 +171,7 @@ export default {
       try {
         const response = await api.getAllBooks();
         this.books = response.data.data;
+        this.liveFiltered = this.books; // default: show all
       } catch (err) {
         this.error = err.message;
       } finally {
@@ -186,12 +179,31 @@ export default {
       }
     },
 
-    handleSearch() {
-      // Search happens automatically through computed property
+    updateLiveFilter() {
+      const query = this.searchQuery.toLowerCase();
+      this.liveFiltered = this.books.filter(book =>
+        book.title.toLowerCase().includes(query) ||
+        book.author.toLowerCase().includes(query) ||
+        book.isbn.toLowerCase().includes(query) ||
+        book.yearPublished.toString().includes(query) ||
+        (book.published && 'published'.includes(query)) ||
+        (!book.published && 'unpublished'.includes(query))
+      );
+      this.locked = false; // typing resets lock
     },
 
-    clearSearch() {
-      this.searchQuery = '';
+    handleSearch() {
+      const query = this.searchQuery.toLowerCase();
+      this.searchResults = this.books.filter(book =>
+        book.title.toLowerCase().includes(query) ||
+        book.author.toLowerCase().includes(query) ||
+        book.isbn.toLowerCase().includes(query) ||
+        book.yearPublished.toString().includes(query) ||
+        (book.published && 'published'.includes(query)) ||
+        (!book.published && 'unpublished'.includes(query))
+      );
+      this.locked = true; // lock results
+      this.searchQuery = ''; // optional: clear input
     },
 
     toggleMenu(bookId) {
@@ -324,6 +336,20 @@ export default {
   border-radius: 8px;
   font-weight: 600;
   cursor: pointer;
+}
+
+.btn-search {
+  padding: 12px 25px;
+  background: #667eea;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-search:hover {
+  background: #5568d3;
 }
 
 .modal {
