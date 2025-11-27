@@ -4,6 +4,12 @@
 
       <!-- Header Buttons -->
       <div class="header">
+          <button class="btn-add counter-btn" disabled>
+            Published: {{ publishedCount }}
+          </button>
+         <button class="btn-add counter-btn" disabled>
+            Unpublished: {{ unpublishedCount }}
+         </button>
         <button @click="showAddForm = true" class="btn-add">Add New Book</button>
         <button @click="refreshBooks" class="btn-add">Refresh</button>
         <button @click="showFilterForm = true" class="btn-add">Filter</button>
@@ -94,12 +100,17 @@
               </div>
             </div>
 
-            <div class="form-group checkbox-group">
-              <label>
-                <input type="checkbox" v-model="filterCriteria.published">
-                <span>Published Only</span>
-              </label>
-            </div>
+          <div class="form-group">
+            <label>Publication Status</label>
+              <select v-model="filterCriteria.status" class="dropdown-input">
+                  <option value="">All</option>
+                  <option value="published">Published</option>
+                  <option value="unpublished">Unpublished</option>
+              </select>
+          </div>
+
+
+
 
             <div class="form-actions">
               <button type="submit" class="btn-save">Apply Filter</button>
@@ -193,20 +204,28 @@ export default {
         isbn: '',
         published: false
       },
-      filterCriteria: { // NEW
+      filterCriteria: {
         title: '',
         author: '',
         year: null,
         rating: null,
-        published: false
+        status: '' // "published", "unpublished", or ""
       }
+
     };
   },
   computed: {
     displayedBooks() {
       return this.locked ? this.searchResults : this.liveFiltered;
+    },
+    publishedCount() {
+      return this.books.filter(book => book.published).length;
+    },
+    unpublishedCount() {
+      return this.books.filter(book => !book.published).length;
     }
   },
+
   mounted() {
     this.loadBooks();
     document.addEventListener('click', this.closeMenuOnClickOutside);
@@ -263,17 +282,21 @@ export default {
     },
 
     // NEW: Apply filter criteria via modal
-    applyFilter() {
-      this.searchResults = this.books.filter(book => {
-        return (!this.filterCriteria.title || book.title.toLowerCase().includes(this.filterCriteria.title.toLowerCase())) &&
-               (!this.filterCriteria.author || book.author.toLowerCase().includes(this.filterCriteria.author.toLowerCase())) &&
-               (!this.filterCriteria.year || book.yearPublished === this.filterCriteria.year) &&
-               (!this.filterCriteria.rating || book.rating >= this.filterCriteria.rating) &&
-               (!this.filterCriteria.published || book.published);
-      });
-      this.locked = true;
-      this.closeFilterForm();
-    },
+      applyFilter() {
+        this.searchResults = this.books.filter(book => {
+          return (!this.filterCriteria.title || book.title.toLowerCase().includes(this.filterCriteria.title.toLowerCase())) &&
+                (!this.filterCriteria.author || book.author.toLowerCase().includes(this.filterCriteria.author.toLowerCase())) &&
+                (!this.filterCriteria.year || book.yearPublished === this.filterCriteria.year) &&
+                (!this.filterCriteria.rating || book.rating >= this.filterCriteria.rating) &&
+                (!this.filterCriteria.status ||
+                  (this.filterCriteria.status === 'published' && book.published) ||
+                  (this.filterCriteria.status === 'unpublished' && !book.published));
+        });
+        this.locked = true;
+        this.closeFilterForm();
+      },
+
+
 
     closeFilterForm() {
       this.showFilterForm = false;
@@ -647,6 +670,25 @@ export default {
   background: greenyellow;
   color: #000;
 }
+
+
+.dropdown-input {
+  width: 100%;
+  padding: 10px;
+  border: 2px solid #ddd;
+  border-radius: 5px;
+  font-size: 1rem;
+  background: #667eea;   /* blue background */
+  color: white;          /* white text */
+  appearance: none;      /* remove default browser arrow styling */
+}
+
+.dropdown-input option {
+  background: white;     /* dropdown options background */
+  color: #262626;        /* option text color */
+}
+
+
 
 footer {
   text-align: center;
