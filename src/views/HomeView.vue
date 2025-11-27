@@ -2,6 +2,20 @@
   <div class="page">
     <div class="container">
 
+    <div class="top-bar">
+      <h1 class="app-title">Book Manager</h1>
+
+      <div class="profile-section">
+        <!-- Profile picture -->
+        <img src="@/assets/profile.png" alt="Profile" class="profile-pic" />
+
+        <!-- Logout as white clickable text -->
+        <a href="login.html" class="logout-link">Logout</a>
+      </div>
+    </div>
+
+
+
       <!-- Header Buttons -->
       <div class="header">
           <button class="btn-add counter-btn" disabled>
@@ -694,6 +708,99 @@ export default {
   min-width: 120px;      /* optional: set a minimum width */
 }
 
+
+
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 20px;
+}
+
+.app-title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.profile-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+
+.logout-btn {
+  text-align: center;
+  size: 2px;
+  
+}
+
+
+
+.counter-btn {
+  cursor: default;
+  opacity: 0.95;
+}
+.counter-btn:hover {
+  background-color: #ffc107;
+}
+
+.dropdown-input {
+  width: 100%;
+  padding: 10px;
+  border: 2px solid #ddd;
+  border-radius: 5px;
+  font-size: 1rem;
+  background: #667eea;
+  color: white;
+  appearance: none;
+}
+
+.dropdown-input option {
+  background: white;
+  color: #262626;
+}
+
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 100px; /* moved content below downward */
+}
+
+.app-title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.profile-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.profile-pic {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #fff;
+}
+
+.logout-link {
+  color: white;
+  font-weight: 600;
+  text-decoration: none;
+  font-size: 0.95rem;
+}
+
+.logout-link:hover {
+  text-decoration: underline;
+}
 
 footer {
   text-align: center;

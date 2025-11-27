@@ -38,7 +38,7 @@ body {
 
 /* Header */
 .app-header {
-  padding: 20px;
+  padding: 30px;
   text-align: center;
 }
 .app-header h1 {
