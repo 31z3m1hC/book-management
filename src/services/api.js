@@ -13,4 +13,7 @@ export default {
   updateBook(id, data) { return api.put(`/books/${id}`, data); },
   deleteBook(id) { return api.delete(`/books/${id}`); },
   searchBooks(query) { return api.get(`/books/search/${query}`); }
+
 };
+
+
