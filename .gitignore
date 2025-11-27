@@ -74,3 +74,15 @@ tmp/
 
 # Vue specific
 *.local
+*.jscon
+node_modules/
+dist/
+.env
+*.local
+*.cache
+*.log
+
+# Ignore config/json files (only if you want to)
+*.json
+vite.config.js
+jsconfig.json
