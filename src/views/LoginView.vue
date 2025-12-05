@@ -11,7 +11,8 @@
 
     <div class="container">
       <h1>Book Manager</h1>
-      <p class="subtitle">Manage your book collection</p>
+      <p class="subtitle" v-if="!showRegisterForm">Login</p>
+      <p class="subtitle" v-else>Register</p>
 
       <!-- Login Form -->
       <form v-if="!showRegisterForm" @submit.prevent="handleLogin">
@@ -54,6 +55,7 @@
       <!-- Register Form -->
       <form v-else @submit.prevent="handleRegister">
         <div class="form-group">
+          
           <label>Full Name</label>
           <input 
             type="text" 
