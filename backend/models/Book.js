@@ -1,43 +1,40 @@
-// This defines what a "Book" Schema looks like in our database
-
+// models/Book.js
 const mongoose = require('mongoose');
 
-// Create a blueprint for books
 const bookSchema = new mongoose.Schema({
   title: {
     type: String,
-    required: true  
+    required: true
   },
-  author: {
+  author: { 
     type: String,
-    required: true  
+    required: true
   },
-  published: {
+  published: { 
     type: Boolean,
-    default: false  
+    default: false
   },
-  rating: {
+  rating: { 
     type: Number,
-    min: 0,        
-    max: 5,        
-    default: 0     
+    min: 0,
+    max: 5,
+    default: 0
   },
-  yearPublished: {
+  yearPublished: { 
     type: Number,
-    required: true  
+    required: true
   },
-  isbn: {
+  isbn: { 
     type: String,
-    required: true, 
-    unique: true    
+    required: true,
+    unique: true
   },
-  content: {
+  content: {    // ← Changed from 'link' to 'content'
     type: String,
-    default: ''     
+    default: ''
   }
-}, {
-  timestamps: true  
+}, { 
+  timestamps: true
 });
 
-// export the model to use it elsewhere
 module.exports = mongoose.model('Book', bookSchema);
