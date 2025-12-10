@@ -153,7 +153,7 @@
           v-for="book in displayedBooks"
           :key="book._id"
           class="card"
-          @click="openBookLink(book)"
+          @click="handleCardClick($event, book)"
         >
           <div v-if="isAdmin" class="cardMenu">
             <button @click.stop="toggleMenu(book._id)" class="menuButton">⋮</button>
@@ -373,19 +373,61 @@
           this.showFilterForm = false;
         },
 
-        handleCardClick(book) {
-          this.openBookLink(book);
-        },
-
-        openBookLink(book) {
-          // Check if content exists and has some value
+        handleCardClick(event, book) {
+          // Only open link if click wasn't on menu button or menu items
+          if (event.target.closest('.cardMenu') || event.target.closest('.menuButton') || event.target.closest('.dropdownMenu')) {
+            return;
+          }
+          
           if (!book.content || book.content.trim() === '') {
-            this.showErrorToast('This book has no link available');
+            alert('This book has no link available');
             return;
           }
 
-          // Open the link directly
-          window.open(book.content, '_blank', 'noopener,noreferrer');
+          let url = book.content.trim();
+
+          // Ensure URL has a protocol
+          if (!url.match(/^https?:\/\//i)) {
+            url = 'https://' + url;
+          }
+
+          // Open in new tab
+          window.open(url, '_blank', 'noopener,noreferrer');
+        },
+
+        openBookLink(book) {
+          console.log('openBookLink called with:', book.title);
+          console.log('URL:', book.content);
+          
+          if (!book.content || book.content.trim() === '') {
+            alert('This book has no link available');
+            return;
+          }
+
+          let url = book.content.trim();
+
+          // Ensure URL has a protocol
+          if (!url.match(/^https?:\/\//i)) {
+            url = 'https://' + url;
+          }
+
+          console.log('Opening URL:', url);
+
+          try {
+            // Open in new tab with security features
+            const newWindow = window.open(url, '_blank', 'noopener,noreferrer');
+            
+            // Check if popup was blocked
+            if (!newWindow || newWindow.closed || typeof newWindow.closed === 'undefined') {
+              // Popup was blocked, show alternative
+              if (confirm(`Unable to open link automatically. The link is:\n${url}\n\nClick OK to navigate to the link.`)) {
+                window.location.href = url;
+              }
+            }
+          } catch (err) {
+            console.error('Error opening link:', err);
+            alert('Unable to open link. Please copy and paste it manually:\n' + url);
+          }
         },
 
         handleDeleteModalBackdropClick(e) {
